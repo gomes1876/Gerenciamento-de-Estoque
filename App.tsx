@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { FlatList, NativeBaseProvider, ScrollView, View } from 'native-base';
+import { useEffect } from 'react';
 // import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import ItemMenu from './src/components/ItemMenu';
 import { img01 } from './src/testData/images';
@@ -39,6 +40,9 @@ export default function App() {
       image: img01,
     },
   ]
+  useEffect(() => {
+
+  }, [])
   return (
     <NativeBaseProvider>
       {/* <SafeAreaView> */}
