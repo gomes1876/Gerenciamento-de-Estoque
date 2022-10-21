@@ -7,30 +7,51 @@ import * as ImagePicker from 'expo-image-picker';
 import { FontAwesome } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
+import { insertData } from "../sqlite/services/products.services";
+import { image, item } from "../types/Item";
+
 
 export default function AddItem() {
-    const [formData, setData] = useState({});
-    const [image, setImage] = useState(null);
+    const defaultItemValue: item = {
+        image: '',
+        inventory: 0,
+        price: 0,
+        title: ""
+    }
+    const [formData, setData] = useState<item>(defaultItemValue);
+    const [image, setImage] = useState<string | ''>('');
     const navigation = useNavigation();
 
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
             aspect: [4, 3],
             quality: 1,
         });
 
-        console.log(result);
+        // console.log(result);
 
         if (!result.cancelled) {
-            setImage(result?.uri);
+            setImage(result.uri);
         }
     };
 
+    async function save() {
+        console.log(image);
+
+        await insertData({
+            image,
+            inventory: formData.inventory,
+            price: formData.price,
+            title: formData.title
+        });
+
+        navigation.navigate('Home');
+    }
 
     return (
-        <View mt={'6'} flex={1} backgroundColor={Colors.lightBlue} >
+        <View flex={1} backgroundColor={Colors.lightBlue} paddingTop={'6'}>
             <Pressable backgroundColor={Colors.darkBlue} p={'1'} borderRadius={'md'}
                 alignSelf={'flex-start'} marginLeft={'3%'} marginTop={'3%'}
                 onPress={() => navigation.goBack()}
@@ -41,9 +62,9 @@ export default function AddItem() {
             </Pressable>
 
             <Text mt={'3'} color={Colors.darkBlue} fontWeight={'bold'} fontSize={'2xl'} ml={'6'}>Adicionar item</Text>
-            <ItemForm title="Título" onChangeText={value => setData({ ...formData, titulo: value })} />
-            <ItemForm title="Quantidade" onChangeText={value => setData({ ...formData, quantidade: value })} />
-            <ItemForm title="Valor" onChangeText={value => setData({ ...formData, valor: value })} />
+            <ItemForm title="Título" onChangeText={value => setData({ ...formData, title: value })} />
+            <ItemForm keyboardType="number-pad" title="Quantidade" onChangeText={value => setData({ ...formData, inventory: parseInt(value) })} />
+            <ItemForm keyboardType="number-pad" title="Valor" onChangeText={value => setData({ ...formData, price: parseFloat(value) })} />
 
             {image &&
                 <View
@@ -56,15 +77,13 @@ export default function AddItem() {
                     </Pressable>
 
                     <Image w={'100%'} h={'100%'} borderRadius={'md'}
-                        source={{ uri: image }} alt="Alternate Text"
+                        source={{ uri: image.toString() }} alt="imagem do produto"
                         size="md" alignSelf={'center'} />
                 </View>
             }
 
             <ButtonForm text="Adicionar Foto" onPress={pickImage} />
-            <VStack h={'100%'} >
-                <ButtonForm theme="darl" text="Concluir" />
-            </VStack>
+            <ButtonForm theme="darl" text="Concluir" onPress={save} />
         </View>
     );
 }

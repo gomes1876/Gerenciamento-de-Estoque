@@ -1,73 +1,79 @@
 import { FlatList, View } from "native-base";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { AddButton } from "../components/AddButton";
 import ItemMenu from "../components/ItemMenu";
 import Searchitem from "../components/SearchItem";
-import { img01 } from "../testData/images";
 import Colors from "../utils/styles/Colors";
-import { useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { showData } from "../sqlite/services/products.services";
+import { item } from "../types/Item";
+import ModalItem from "../components/ModalItem";
 
 export default function Home() {
     const image = ``;
     const [search, setSearch] = useState('');
     const navigation = useNavigation();
+    const [itemSelect, setItemSelect] = useState<item>(null);
+    const [modalVisible, setModalVisible] = useState<boolean>(false);
+    const [data, setData] = useState<item[]>([]);
 
-    const data = [
-        {
-            title: 'prod01',
-            inventory: '10',
-            price: '12.5',
-            image: img01,
-        },
-        {
-            title: 'prod02',
-            inventory: '0',
-            price: '27.5',
-            image: img01,
-        },
-        {
-            title: 'prod03',
-            inventory: '18',
-            price: '16',
-            image: img01,
-        },
-        {
-            title: 'prod03',
-            inventory: '18',
-            price: '16',
-            image: img01,
-        },
-        {
-            title: 'prod03',
-            inventory: '18',
-            price: '16',
-            image: img01,
-        },
-    ]
+    const [dataUsable, setDataUsable] = useState<item[]>(data)
 
-    const [dataUsable, setDataUsable] = useState(data)
+    const isFocused = useIsFocused();
+
+    useEffect(() => {
+        
+        // isFocused && init();
+        const unsubscribe = navigation.addListener('focus', () => {
+            init();
+        });
+
+        return unsubscribe;
+    }, [navigation]);
+
+    async function init() {
+        const res: any = await showData();
+        setData(res);
+        setDataUsable(res);
+    }
 
     function searchItems() {
-        setDataUsable(data.filter(item => {
-            console.log(item.title.includes(search));
-            return item.title.includes(search)
-        }));
+
+        if (search != "") {
+            setDataUsable(data.filter(item => {
+                return item.title.includes(search)
+            }));
+
+        } else {
+            setDataUsable(data);
+        }
+    }
+
+    function actionModal() {
+        setItemSelect(null);
+        init();
     }
 
     return (
-        <View flex={1} padding={'4'} backgroundColor={Colors.lightBlue}>
-            <View marginTop={'4'}>
+        <View flex={'1'} paddingTop={'4'} paddingX={'2'} backgroundColor={Colors.lightBlue}>
+            <View flex={'1'} marginTop={'4'} justifyContent={'space-between'}>
                 <Searchitem value={search} onChangeText={setSearch} action={searchItems} />
-                <AddButton mb={'20'} onPress={() => navigation.navigate('AddItem')} />
-                <FlatList data={dataUsable}
+                <FlatList h={'full'} data={dataUsable}
                     numColumns={2}
-                    mb={'20'}
-                    renderItem={({ item }) =>
-                        <ItemMenu flex={1} mt={'2'} ml={'1'} image={item.image}
+                    mb={'6'}
+                    renderItem={({ item: item }) => {
+                        return (<ItemMenu flex={1} mt={'2'} ml={'1'} image={item.image}
                             price={item.price} inventory={item.inventory}
-                            title={item.title} />}
+                            title={item.title}
+                            onPress={() => {
+                                setModalVisible(true);
+                                setItemSelect(item);
+                            }} />);
+                    }}
                 />
+                <AddButton mb={'20'} onPress={() => navigation.navigate('AddItem')} />
+                <ModalItem visible={modalVisible} setVisible={setModalVisible} item={itemSelect} update={actionModal} /> 
             </View>
         </View>
     );

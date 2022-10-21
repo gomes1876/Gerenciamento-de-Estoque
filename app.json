@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Gerenciamento-de-Estoque",
-    "slug": "Gerenciamento-de-Estoque",
-    "version": "1.0.0",
+    "name": "Stock",
+    "slug": "Stock",
+    "version": "0.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -17,7 +17,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#D0E3FF"
     },
     "updates": {
       "fallbackToCacheTimeout": 0

@@ -6,14 +6,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 type props = IInputProps & {
     value: string;
-    action: any;
+    action: () => any;
 };
 
 export default function Searchitem({ value, action, ...rest }: props) {
 
     useEffect(() => {
-        if (value.length > 0) {
-            action()
+        if (value != undefined) {
+            action();
         }
     }, [value]);
 
@@ -26,7 +26,6 @@ export default function Searchitem({ value, action, ...rest }: props) {
                         color: Colors.lightBlue, selectionColor: Colors.white,
                     }}
                     value={value}
-
                     rightElement={<Icon
                         as={<Feather name="search" size={24} color="black" />}
                         size={5}

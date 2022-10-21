@@ -2,15 +2,14 @@ import { VStack, IPressableProps, Text, HStack, Image, Pressable, IStackProps } 
 import Colors from "../utils/styles/Colors";
 
 import { MaterialIcons } from "@expo/vector-icons";
+import { item } from "../types/Item";
 
-type props = IStackProps & {
-  title: string;
-  inventory: string;
-  price: string;
-  image: string;
+type props = IStackProps & item & {
+  onPress: () => any;
 };
 
-export default function ItemMenu({ title, inventory, price, image, ...rest }: props) {
+export default function ItemMenu({ title, inventory, price, image, onPress, ...rest }: props) {
+
   return (
     <VStack w={"1/2"}
       backgroundColor={Colors.white}
@@ -20,7 +19,7 @@ export default function ItemMenu({ title, inventory, price, image, ...rest }: pr
       {...rest}>
       <Pressable
         borderRadius={"md"}
-        onPress={() => console.log({ title, inventory, price })}
+        onPress={onPress}
         padding={"4"}
         _pressed={{ backgroundColor: Colors.lightBlue_RGBA }}
       >
@@ -28,7 +27,7 @@ export default function ItemMenu({ title, inventory, price, image, ...rest }: pr
         <Text fontSize={"xl"} color={Colors.darkBlue}>
           {title}
         </Text>
-        <Image alignSelf={'center'} h={'32'} source={{ uri: `data:image/jpeg;base64,${image}` }} alt={'any'} />
+        <Image alignSelf={'center'} h={'32'} w={'100%'} borderRadius={'md'} source={{ uri: image }} alt={'sem imagem'} />
         <VStack mt={'4'} space={'1'}>
           <HStack>
             <MaterialIcons name="inventory" size={26} color={Colors.darkBlue} />
