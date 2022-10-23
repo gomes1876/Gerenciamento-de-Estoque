@@ -30,6 +30,14 @@ export default function ModalItem({ visible, setVisible, item, update, ...rest }
         });
 
     }
+    function lessQuantity() {
+
+        setItem2({
+            ...item2,
+            inventory: item2 == null || item2.inventory == null ? 1 : item2.inventory - 1,
+        });
+
+    }
     function editPriceValue(e: string) {
 
         if (e != "" && e != undefined) {
@@ -70,7 +78,9 @@ export default function ModalItem({ visible, setVisible, item, update, ...rest }
                             <MaterialIcons name="inventory" size={26} color={Colors.darkBlue} />
 
                             <HStack space={'4'}>
-                                <AntDesign name="minuscircle" size={24} color={Colors.darkBlue} />
+                                <Pressable onPress={lessQuantity}>
+                                    <AntDesign name="minuscircle" size={24} color={Colors.darkBlue} />
+                                </Pressable>
                                 <Text color={Colors.darkBlue} fontWeight={'medium'} fontSize={'lg'}>{item2?.inventory}</Text>
                                 <Pressable onPress={addQuantity}>
                                     <AntDesign name="pluscircle" size={24} color={Colors.darkBlue} />
@@ -95,7 +105,7 @@ export default function ModalItem({ visible, setVisible, item, update, ...rest }
                                 </HStack>
                                     :
                                     <Input
-
+                                        keyboardType="number-pad"
                                         textAlign={'center'} w={'20'} h={'8'} borderWidth={'1'} borderColor={Colors.lightBlue}
                                         value={item2?.price?.toString()} onChangeText={editPriceValue}
                                         onSubmitEditing={() => setInputVisible(false)}
